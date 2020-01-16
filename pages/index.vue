@@ -3,7 +3,7 @@
     <!-- Carousel 走马灯：实现首页轮播图 -->
     <el-carousel height="700px" class="carousel">
       <el-carousel-item v-for="(item,index ) in banners" :key="index">
-        <div class="banner" :style="`background:url(${item}) center center no-repeat`"></div>
+        <div class="banner" :style="`background:url(${$axios.defaults.baseURL+item.url}) center center no-repeat`"></div>
       </el-carousel-item>
     </el-carousel>
     <!-- 搜索框 -->
@@ -39,9 +39,9 @@ export default {
     return {
       // 轮播图数据
       banners: [
-        "http://157.122.54.189:9095/assets/images/th01.jfif",
-        "http://157.122.54.189:9095/assets/images/th02.jfif",
-        "http://157.122.54.189:9095/assets/images/th03.jfif"
+        // "http://157.122.54.189:9095/assets/images/th01.jfif",
+        // "http://157.122.54.189:9095/assets/images/th02.jfif",
+        // "http://157.122.54.189:9095/assets/images/th03.jfif"
       ],
       // 搜索栏的数据
       options: [
@@ -74,6 +74,14 @@ export default {
     },
     // 处理点击搜索按钮的事件
     handleSearch(){}
+  },
+  mounted(){
+    this.$axios({
+      url:'/scenics/banners'
+    }).then(res=>{
+      console.log(res);
+      this.banners=res.data.data
+    })
   }
 };
 </script>
