@@ -1,13 +1,29 @@
 <template>
   <div>
+    <!-- 头部 -->
+    <Header></Header>
     <nuxt />
+    <!-- 尾部 -->
+    <Footer></Footer>
   </div>
 </template>
+<script>
+// 引入公共部分的组件
+import Header from "@/components/header.vue";
+import Footer from "@/components/footer.vue";
 
+export default {
+  // 注册组件
+  components: {
+    Header,
+    Footer
+  }
+};
+</script>
 <style>
 html {
-  font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
   font-size: 16px;
   word-spacing: 1px;
   -ms-text-size-adjust: 100%;
@@ -51,5 +67,16 @@ html {
 .button--grey:hover {
   color: #fff;
   background-color: #35495e;
+}
+*{
+  margin: 0;
+  padding: 0;
+}
+ul,li,ol{
+  list-style: none;
+}
+a{
+  text-decoration: none;
+  color: inherit
 }
 </style>
