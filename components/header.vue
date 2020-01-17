@@ -42,6 +42,13 @@ export default {};
   .navs {
     flex: 1;
     margin: 0 20px;
+    .nuxt-link-exact-active {
+      background-color: #409eff;
+      color: #fff;
+      &:hover {
+        color: #fff !important;
+      }
+    }
     a {
       height: 60px;
       padding: 0 20px;
@@ -55,16 +62,9 @@ export default {};
   .login {
     color: #666;
     font-size: 14px;
-    a:hover{
-        color: #409eff;
-        text-decoration: underline
-    }
-  }
-  .nuxt-link-exact-active {
-    background-color: #409eff;
-    color: #fff;
-    &:hover {
-      color: #fff !important;
+    a:hover {
+      color: #409eff;
+      text-decoration: underline;
     }
   }
 }
