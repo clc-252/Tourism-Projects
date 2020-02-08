@@ -54,24 +54,32 @@ export default {
     handleLoginSubmit() {
       this.$refs.form.validate(valid => {
         if (valid) {
-          this.$axios({
-            method: "post",
-            url: "/accounts/login",
-            data: this.form
-          }).then(res => {
-            console.log(res);
-            /* 
-              根据页面的结构，如果使用localStorage的方式存储登陆成功的数据，那么无法在渲染的时候让header刷新显示
-              可以用兄弟组件之间的传值来实现，但是比较麻烦，所以使用store
-            */
-          //  let {data}=res
-          let data=res.data
+          // this.$axios({
+          //   method: "post",
+          //   url: "/accounts/login",
+          //   data: this.form
+          // }).then(res => {
+          //   console.log(res);
+          //   /* 
+          //     根据页面的结构，如果使用localStorage的方式存储登陆成功的数据，那么无法在渲染的时候让header刷新显示
+          //     可以用兄弟组件之间的传值来实现，但是比较麻烦，所以使用store
+          //   */
+          // //  let {data}=res 解构
+          // let data=res.data
            
-          //  使用commit调用mutations方法，存放数据
-          this.$store.commit('user/setUserInfo',data)
-          // 登陆成功跳转到首页
-          this.$router.push('/')
-          });
+          // //  使用commit调用mutations方法，存放数据
+          // this.$store.commit('user/setUserInfo',data)
+          // // 登陆成功跳转到首页
+          // this.$router.push('/')
+          // });
+
+
+          // 通过dispatch调用action中的方法
+          this.$store.dispatch('user/login',this.form).then(()=>{
+            this.$message.success('登陆成功！')
+            // 跳转到首页
+            this.$router.push('/')
+          })
         }
       });
     }

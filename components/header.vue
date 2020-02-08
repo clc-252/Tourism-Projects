@@ -35,7 +35,14 @@
 </template>
 
 <script>
-export default {};
+export default {
+  methods:{
+    testClick(){
+      console.log(1233);
+      
+    }
+  }
+};
 </script>
 
 <style lang='less' scoped>
