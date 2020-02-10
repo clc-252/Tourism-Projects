@@ -27,7 +27,9 @@
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>个人中心</el-dropdown-item>
-          <el-dropdown-item>退出</el-dropdown-item>
+          <el-dropdown-item>
+            <div @click="handleLogout">退出</div>
+          </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </el-row>
@@ -37,9 +39,12 @@
 <script>
 export default {
   methods:{
-    testClick(){
-      console.log(1233);
-      
+    // 退出登录
+    handleLogout(){
+      this.$store.commit('user/setUserInfo',{
+        token:'',
+        user:{}
+      })
     }
   }
 };

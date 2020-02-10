@@ -47,5 +47,33 @@ export const actions = {
       //  使用commit调用mutations方法，存放数据
       store.commit('setUserInfo', data)
     });
+  },
+  // 发送验证码的请求
+  sendCaptcha(store, data) {
+    return this.$axios({
+      method: "post",
+      url: "/captchas",
+      data: {
+        tel: data // 手机号码
+      }
+    }).then(res => {
+      // console.log(res);
+      return res;
+    });
+  },
+  // 注册的请求
+  register(store, data) {
+    return this.$axios({
+      method: 'post',
+      url: '/accounts/register',
+      data
+    }).then(res => {
+      // 将data保存到userInfo用户数据中
+      const {
+        data
+      } = res;
+      //  使用commit调用mutations方法，存放数据
+      store.commit('setUserInfo', data)
+    })
   }
 }
