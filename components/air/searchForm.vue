@@ -57,6 +57,8 @@
 </template>
 
 <script>
+// 引入moment
+import moment from "moment";
 export default {
   data() {
     return {
@@ -139,7 +141,7 @@ export default {
           v.value = v.name.replace("市", "");
           return v;
         });
-        cb(this.destData)
+        cb(this.destData);
       });
     },
 
@@ -158,36 +160,59 @@ export default {
     },
 
     // 出发城市输入框失焦时触发
-    handleDepartBlur(){
-        // 如果用户不点击建议项，直接自己输入，默认点击第一个
-        if(this.departData.length===0){
-            return;
-        }
-        // 默认点击第一个
-        this.form.departCity=this.departData[0].value;
-        this.form.departCode=this.departData[0].sort;
+    handleDepartBlur() {
+      // 如果用户不点击建议项，直接自己输入，默认点击第一个
+      if (this.departData.length === 0) {
+        return;
+      }
+      // 默认点击第一个
+      this.form.departCity = this.departData[0].value;
+      this.form.departCode = this.departData[0].sort;
     },
 
     // 目的城市输入框失焦时触发
-    handleDestBlur(){
-        // 如果用户不点击建议项，直接自己输入，默认点击第一个
-        if(this.destData.length===0){
-            return;
-        }
-        // 默认点击第一个
-        this.form.destCity=this.destData[0].value;
-        this.form.destCode=this.destData[0].sort;
+    handleDestBlur() {
+      // 如果用户不点击建议项，直接自己输入，默认点击第一个
+      if (this.destData.length === 0) {
+        return;
+      }
+      // 默认点击第一个
+      this.form.destCity = this.destData[0].value;
+      this.form.destCode = this.destData[0].sort;
     },
 
     // 确认选择日期时触发
-    handleDate(value) {},
+    handleDate(value) {
+      // 修改日期时间的格式
+      this.form.departDate = moment(value).format("YYYY-MM-DD");
+    },
 
     // 触发和目标城市切换时触发
     handleReverse() {},
 
     // 提交表单是触发
     handleSubmit() {
-      console.log(this.form);
+      //   console.log(this.form);
+
+      // 如果用户没有输入要进行提示
+      if (!this.form.departCity) {
+        this.$message.console.error("请输入出发城市");
+        return;
+      }
+      if (!this.form.destCity) {
+        this.$message.console.error("请输入到达城市");
+        return;
+      }
+      if (!this.form.departDate) {
+        this.$message.console.error("请选择时间");
+        return;
+      }
+
+      // 点击提交表单，实现页面的跳转，并确保url中带有所需的五个参数
+      this.$router.push({
+        path: "/air/flights",
+        query: this.form
+      });
     }
   },
   mounted() {}
