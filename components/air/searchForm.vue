@@ -83,7 +83,15 @@ export default {
   },
   methods: {
     // tab切换时触发
-    handleSearchTab(item, index) {},
+    handleSearchTab(item, index) {
+      // 切换到往返时进行提示
+      if (index == 1) {
+        this.$alert("目前暂不支持往返，请使用单程选票！", "提示", {
+          confirmButtonText: "确定",
+          type: "warning"
+        });
+      }
+    },
 
     // 监听出发城市输入框的事件
     // value 是选中的值，cb是回调函数callback，接收要展示的列表并通过调用cb可将数组列表展示出来
@@ -188,7 +196,16 @@ export default {
     },
 
     // 触发和目标城市切换时触发
-    handleReverse() {},
+    handleReverse() {
+      // 将出发城市和到达城市的数据交换过来就可以了
+      const { departCity, departCode, destCity, destCode } = this.form;
+
+      this.form.departCity = destCity;
+      this.form.departCode = destCode;
+
+      this.form.destCity = departCity;
+      this.form.destCode = departCode;
+    },
 
     // 提交表单是触发
     handleSubmit() {
