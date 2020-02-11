@@ -15,26 +15,36 @@
 
     <el-form class="search-form-content" ref="form" label-width="80px">
       <el-form-item label="出发城市">
-        <!-- fetch-suggestions 返回输入建议的方法 -->
-        <!-- select 点击选中建议项时触发 -->
+        <!-- fetch-suggestions：可以监听输入框的输入，可以在这个事件中请求API，当请求成功的时候返回输入的建议 -->
+        <!-- select：点击建议列表项时触发 -->
         <el-autocomplete
+          v-model="form.departCity"
           :fetch-suggestions="queryDepartSearch"
           placeholder="请搜索出发城市"
           @select="handleDepartSelect"
+          @blur="handleDepartBlur"
           class="el-autocomplete"
         ></el-autocomplete>
       </el-form-item>
       <el-form-item label="到达城市">
         <el-autocomplete
+          v-model="form.destCity"
           :fetch-suggestions="queryDestSearch"
           placeholder="请搜索到达城市"
           @select="handleDestSelect"
+          @blur="handleDestBlur"
           class="el-autocomplete"
         ></el-autocomplete>
       </el-form-item>
       <el-form-item label="出发时间">
         <!-- change 用户确认选择日期时触发 -->
-        <el-date-picker type="date" placeholder="请选择日期" style="width: 100%;" @change="handleDate"></el-date-picker>
+        <el-date-picker
+          v-model="form.departDate"
+          type="date"
+          placeholder="请选择日期"
+          style="width: 100%;"
+          @change="handleDate"
+        ></el-date-picker>
       </el-form-item>
       <el-form-item label>
         <el-button style="width:100%;" type="primary" icon="el-icon-search" @click="handleSubmit">搜索</el-button>
@@ -54,30 +64,120 @@ export default {
         { icon: "iconfont icondancheng", name: "单程" },
         { icon: "iconfont iconshuangxiang", name: "往返" }
       ],
-      currentTab: 0
+      currentTab: 0,
+      //  搜索表单的数据字段
+      form: {
+        departCity: "", // 出发城市
+        departCode: "", // 出发城市简写代码
+        destCity: "", // 到达城市
+        destCode: "", // 到达城市简写代码
+        departDate: "" // 出发时间
+      },
+      // 出发城市数据列表
+      departData: [],
+      // 到达城市数据列表
+      destData: []
     };
   },
   methods: {
     // tab切换时触发
     handleSearchTab(item, index) {},
 
-    // 出发城市输入框获得焦点时触发
-    // value 是选中的值，cb是回调函数，接收要展示的列表
+    // 监听出发城市输入框的事件
+    // value 是选中的值，cb是回调函数callback，接收要展示的列表并通过调用cb可将数组列表展示出来
     queryDepartSearch(value, cb) {
-      cb([{ value: 1 }, { value: 2 }, { value: 3 }]);
+      //   console.log(value);
+
+      //  如果没有值，就不发送请求
+      if (!value) {
+        return;
+      }
+      // 根据value请求出发城市列表
+      this.$axios({
+        url: "/airs/city",
+        // axios的get请求的参数使用params，post请求才使用data
+        params: {
+          name: value
+        }
+      }).then(res => {
+        console.log(res);
+        // 由于res中的数据没有value值，所以需要进行数据改造，为返回的res中的数据添加value属性，才能进行建议项的展示
+        const { data } = res.data;
+        // 给data中的数据添加value
+        this.departData = data.map(v => {
+          v.value = v.name.replace("市", "");
+          return v;
+        });
+        // cb把数组展示到建议项列表中
+        cb(this.departData);
+      });
+      // 模拟接口请求成功返回数据，这个数组中的每一项必须是对象，对象中必须有value属性
+      /*   const arr = [
+           { value: "广州", sort: "CAN" },
+           { value: "广元", sort: "YUAN" },
+           { value: "广安", sort: "AN" }
+         ];
+      cb(arr);*/
     },
 
-    // 目标城市输入框获得焦点时触发
+    // 监听目标城市输入框的事件
     // value 是选中的值，cb是回调函数，接收要展示的列表
     queryDestSearch(value, cb) {
-      cb([{ value: 1 }, { value: 2 }, { value: 3 }]);
+      //  如果没有值，就不发送请求
+      if (!value) {
+        return;
+      }
+      //  根据value值发送请求
+      this.$axios({
+        url: "/airs/city",
+        params: {
+          name: value
+        }
+      }).then(res => {
+        const { data } = res.data;
+        this.destData = data.map(v => {
+          v.value = v.name.replace("市", "");
+          return v;
+        });
+        cb(this.destData)
+      });
     },
 
-    // 出发城市下拉选择时触发
-    handleDepartSelect(item) {},
+    // 点击出发城市下拉建议列表项时触发
+    // item是点击的建议项对象的数据
+    handleDepartSelect(item) {
+      //   console.log(item);
+      this.form.departCity = item.value;
+      this.form.departCode = item.sort;
+    },
 
-    // 目标城市下拉选择时触发
-    handleDestSelect(item) {},
+    // 点击目标城市下拉选择时触发
+    handleDestSelect(item) {
+      this.form.destCity = item.value;
+      this.form.destCode = item.sort;
+    },
+
+    // 出发城市输入框失焦时触发
+    handleDepartBlur(){
+        // 如果用户不点击建议项，直接自己输入，默认点击第一个
+        if(this.departData.length===0){
+            return;
+        }
+        // 默认点击第一个
+        this.form.departCity=this.departData[0].value;
+        this.form.departCode=this.departData[0].sort;
+    },
+
+    // 目的城市输入框失焦时触发
+    handleDestBlur(){
+        // 如果用户不点击建议项，直接自己输入，默认点击第一个
+        if(this.destData.length===0){
+            return;
+        }
+        // 默认点击第一个
+        this.form.destCity=this.destData[0].value;
+        this.form.destCode=this.destData[0].sort;
+    },
 
     // 确认选择日期时触发
     handleDate(value) {},
@@ -86,7 +186,9 @@ export default {
     handleReverse() {},
 
     // 提交表单是触发
-    handleSubmit() {}
+    handleSubmit() {
+      console.log(this.form);
+    }
   },
   mounted() {}
 };
