@@ -38,12 +38,15 @@
       </el-form-item>
       <el-form-item label="出发时间">
         <!-- change 用户确认选择日期时触发 -->
+        <!-- picker-options：当前时间日期选择器特有的选择项
+        pickerOptions：disabledDate - 设置禁用状态-->
         <el-date-picker
           v-model="form.departDate"
           type="date"
           placeholder="请选择日期"
           style="width: 100%;"
           @change="handleDate"
+          :picker-options="pickerOptions"
         ></el-date-picker>
       </el-form-item>
       <el-form-item label>
@@ -78,7 +81,14 @@ export default {
       // 出发城市数据列表
       departData: [],
       // 到达城市数据列表
-      destData: []
+      destData: [],
+      // 设置日期选择器的禁用状态配置
+      pickerOptions: {
+        disabledDate(time) {
+          // 当天也会被禁用，所以需要将当前的天数解禁，加上一天：3600 * 1000 * 24（毫秒）
+          return time.getTime()+3600 * 1000 * 24 < Date.now();
+        }
+      }
     };
   },
   methods: {
@@ -100,6 +110,10 @@ export default {
 
       //  如果没有值，就不发送请求
       if (!value) {
+        // 如果没有值，还要将数组清空，否则会出现输入失焦之后再删除输入再失焦时，输入框会重新选中数组中第一个数据的问题
+        this.departData = [];
+        // 在没有数据的时候不要显示建议项列表
+        cb([]);
         return;
       }
       // 根据value请求出发城市列表
@@ -135,6 +149,8 @@ export default {
     queryDestSearch(value, cb) {
       //  如果没有值，就不发送请求
       if (!value) {
+        this.destData = [];
+        cb([]);
         return;
       }
       //  根据value值发送请求
