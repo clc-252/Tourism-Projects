@@ -262,21 +262,21 @@ export default {
       this.form.destCode = departCode;
     },
 
-    // 提交表单是触发
+    // 提交表单时触发
     handleSubmit() {
       //   console.log(this.form);
 
       // 如果用户没有输入要进行提示
       if (!this.form.departCity) {
-        this.$message.console.error("请输入出发城市");
+        this.$message.error("请输入出发城市");
         return;
       }
       if (!this.form.destCity) {
-        this.$message.console.error("请输入到达城市");
+        this.$message.error("请输入到达城市");
         return;
       }
       if (!this.form.departDate) {
-        this.$message.console.error("请选择时间");
+        this.$message.error("请选择时间");
         return;
       }
 
