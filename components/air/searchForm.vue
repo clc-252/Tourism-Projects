@@ -86,7 +86,7 @@ export default {
       pickerOptions: {
         disabledDate(time) {
           // 当天也会被禁用，所以需要将当前的天数解禁，加上一天：3600 * 1000 * 24（毫秒）
-          return time.getTime()+3600 * 1000 * 24 < Date.now();
+          return time.getTime() + 3600 * 1000 * 24 < Date.now();
         }
       }
     };
@@ -103,6 +103,27 @@ export default {
       }
     },
 
+    // 封装出发城市和到达城市的事件
+    querySearch(value) {
+      // 根据value请求出发城市列表
+      return this.$axios({
+        url: "/airs/city",
+        // axios的get请求的参数使用params，post请求才使用data
+        params: {
+          name: value
+        }
+      }).then(res => {
+        // 由于res中的数据没有value值，所以需要进行数据改造，为返回的res中的数据添加value属性，才能进行建议项的展示
+        const { data } = res.data;
+        // 给data中的数据添加value
+        const cityData = data.map(v => {
+          v.value = v.name.replace("市", "");
+          return v;
+        });
+        return cityData;
+      });
+    },
+
     // 监听出发城市输入框的事件
     // value 是选中的值，cb是回调函数callback，接收要展示的列表并通过调用cb可将数组列表展示出来
     queryDepartSearch(value, cb) {
@@ -116,7 +137,16 @@ export default {
         cb([]);
         return;
       }
-      // 根据value请求出发城市列表
+
+      // 调用封装的函数
+      this.querySearch(value).then(cityData => {
+        // console.log(cityData);
+        this.departData = cityData;
+        cb(this.departData);
+      });
+
+      //  没有封装之前的请求代码
+      /*  // 根据value请求出发城市列表
       this.$axios({
         url: "/airs/city",
         // axios的get请求的参数使用params，post请求才使用data
@@ -134,14 +164,15 @@ export default {
         });
         // cb把数组展示到建议项列表中
         cb(this.departData);
-      });
-      // 模拟接口请求成功返回数据，这个数组中的每一项必须是对象，对象中必须有value属性
-      /*   const arr = [
-           { value: "广州", sort: "CAN" },
-           { value: "广元", sort: "YUAN" },
-           { value: "广安", sort: "AN" }
-         ];
-      cb(arr);*/
+      }); */
+
+      /* // 模拟接口请求成功返回数据，这个数组中的每一项必须是对象，对象中必须有value属性
+      const arr = [
+        { value: "广州", sort: "CAN" },
+        { value: "广元", sort: "YUAN" },
+        { value: "广安", sort: "AN" }
+      ];
+      cb(arr); */
     },
 
     // 监听目标城市输入框的事件
@@ -153,7 +184,15 @@ export default {
         cb([]);
         return;
       }
-      //  根据value值发送请求
+
+      // 调用封装的函数
+      this.querySearch(value).then(cityData => {
+        this.destData = cityData;
+        cb(this.destData);
+      });
+
+      // 封装之前的请求代码
+      /*  //  根据value值发送请求
       this.$axios({
         url: "/airs/city",
         params: {
@@ -166,7 +205,7 @@ export default {
           return v;
         });
         cb(this.destData);
-      });
+      }); */
     },
 
     // 点击出发城市下拉建议列表项时触发
