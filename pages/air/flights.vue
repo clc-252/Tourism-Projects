@@ -52,8 +52,7 @@ export default {
       flightsData: {
         info: {},
         options: {},
-        flightTimes: {},
-        company: {}
+        flights:[]
       },
       // 当前页数
       pageIndex: 1,
@@ -65,8 +64,7 @@ export default {
       cacheFlightsData: {
         info: {},
         options: {},
-        flightTimes: {},
-        company: {}
+        flights:[]
       }
     };
   },

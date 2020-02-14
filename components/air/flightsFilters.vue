@@ -53,6 +53,7 @@
       筛选：
       <el-button type="primary" round plain size="mini" @click="handleFiltersCancel">撤销</el-button>
     </div>
+    <span>{{filter}}</span>
   </div>
 </template>
 
@@ -82,6 +83,17 @@ export default {
   },
   methods: {
     // 选择机场时候触发
+    handleAirport(value) {},
+
+    // 选择出发时间时候触发
+    handleFlightTimes(value) {},
+
+    // 选择航空公司时候触发
+    handleCompany(value) {},
+
+    // 选择机型时候触发
+    handleAirSize(value) {},
+    /*     // 选择机场时候触发
     handleAirport(value) {
       // 筛选符合选择条件的数据
       const newData = this.data.flights.filter(v => {
@@ -123,10 +135,47 @@ export default {
       });
       // 将数据传给父组件
       this.$emit("getEligibleData", newData);
-    },
+    }, */
 
     // 撤销条件时候触发
     handleFiltersCancel() {}
+  },
+  computed: {
+    // 只需要监听功能
+    filter() {
+      const newData = this.data.flights.filter(v => {
+        // 假设当前的数据是符合筛选条件的
+        let valid = true;
+
+        // 筛选不符合条件的
+        // 筛选起飞机场
+        if (this.airport && v.org_airport_name !== this.airport) {
+          valid = false;
+        }
+        // 筛选起飞时间
+        if (this.flightTimes) {
+          // 将value(选择的出发时间段)切割成数组
+          const timeArr = this.flightTimes.split(",");
+          // 获得所有航班的起飞时间的小时
+          const hour = Number(v.dep_time.split(":")[0]);
+          if (Number(timeArr[0]) > hour || hour >= Number(timeArr[1])) {
+            valid = false;
+          }
+        }
+        // 筛选航空公司
+        if (this.company && v.airline_name !== this.company) {
+          valid = false;
+        }
+        // 筛选机型
+        if (this.airSize && v.plane_size !== this.airSize) {
+          valid = false;
+        }
+        return valid;
+      });
+      // 将数据传给父组件
+      this.$emit("getEligibleData", newData);
+      return "";
+    }
   }
 };
 </script>
