@@ -88,7 +88,14 @@ export default {
     handleFlightTimes(value) {},
 
     // 选择航空公司时候触发
-    handleCompany(value) {},
+    handleCompany(value) {
+      // 筛选符合选择条件的数据
+      const newData=this.data.flights.filter(v=>{
+        return v.airline_name===value
+      })
+      // 将数据传给父组件
+      this.$emit('getEligibleData',newData)
+    },
 
     // 选择机型时候触发
     handleAirSize(value) {},

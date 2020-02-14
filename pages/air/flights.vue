@@ -4,7 +4,7 @@
       <!-- 顶部过滤列表 -->
       <div class="flights-content">
         <!-- 过滤条件 -->
-        <FlightsFilters :data='flightsData' />
+        <FlightsFilters :data="cacheFlightsData" @getEligibleData="getEligibleData" />
 
         <!-- 航班头部布局 -->
         <FlightsListHead />
@@ -44,23 +44,30 @@
 <script>
 import FlightsListHead from "@/components/air/flightsListHead";
 import FlightsItem from "@/components/air/flightsItem";
-import FlightsFilters from "@/components/air/flightsFilters.vue"
+import FlightsFilters from "@/components/air/flightsFilters.vue";
 export default {
   data() {
     return {
       // 机票列表的数据
       flightsData: {
-        info:{},
-        options:{},
-        flightTimes:{},
-        company:{}
+        info: {},
+        options: {},
+        flightTimes: {},
+        company: {}
       },
       // 当前页数
       pageIndex: 1,
       // 当前的条数
       pageSize: 5,
       // 总条数
-      total: 0
+      total: 0,
+      // 需要进行数据的备份
+      cacheFlightsData: {
+        info: {},
+        options: {},
+        flightTimes: {},
+        company: {}
+      }
     };
   },
   components: {
@@ -78,6 +85,9 @@ export default {
       // 有flights、info、options、total属性
       this.flightsData = res.data;
 
+      // 备份数组：不能直接=res.data,这样是引用类型的存储，一个发生变化，另一个也是变化了的
+      this.cacheFlightsData={...res.data}
+
       // 修改总数
       this.total = this.flightsData.total;
     });
@@ -90,6 +100,12 @@ export default {
     // 切换页码时触发
     handleCurrentChange(index) {
       this.pageIndex = index;
+    },
+    // 获取过滤子组件中过滤后的数据
+    getEligibleData(newData) {
+      this.flightsData.flights = newData;
+      // 修改总数
+      this.total = newData.length;
     }
   },
   computed: {
