@@ -82,23 +82,48 @@ export default {
   },
   methods: {
     // 选择机场时候触发
-    handleAirport(value) {},
+    handleAirport(value) {
+      // 筛选符合选择条件的数据
+      const newData = this.data.flights.filter(v => {
+        return v.org_airport_name === value;
+      });
+      // 将数据传给父组件
+      this.$emit("getEligibleData", newData);
+    },
 
     // 选择出发时间时候触发
-    handleFlightTimes(value) {},
+    handleFlightTimes(value) {
+      // 将value(选择的出发时间段)切割成数组
+      const timeArr = value.split(",");
+
+      const newData = this.data.flights.filter(v => {
+        // 获得所有航班的起飞时间的小时
+        const hour = Number(v.dep_time.split(":")[0]);
+        return Number(timeArr[0]) <= hour && hour < Number(timeArr[1]);
+      });
+      // 将数据传给父组件
+      this.$emit("getEligibleData", newData);
+    },
 
     // 选择航空公司时候触发
     handleCompany(value) {
       // 筛选符合选择条件的数据
-      const newData=this.data.flights.filter(v=>{
-        return v.airline_name===value
-      })
+      const newData = this.data.flights.filter(v => {
+        return v.airline_name === value;
+      });
       // 将数据传给父组件
-      this.$emit('getEligibleData',newData)
+      this.$emit("getEligibleData", newData);
     },
 
     // 选择机型时候触发
-    handleAirSize(value) {},
+    handleAirSize(value) {
+      // 筛选符合选择条件的数据
+      const newData = this.data.flights.filter(v => {
+        return v.plane_size === value;
+      });
+      // 将数据传给父组件
+      this.$emit("getEligibleData", newData);
+    },
 
     // 撤销条件时候触发
     handleFiltersCancel() {}

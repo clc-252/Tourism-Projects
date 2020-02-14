@@ -101,6 +101,7 @@ export default {
     handleCurrentChange(index) {
       this.pageIndex = index;
     },
+    
     // 获取过滤子组件中过滤后的数据
     getEligibleData(newData) {
       this.flightsData.flights = newData;
