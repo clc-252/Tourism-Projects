@@ -4,7 +4,7 @@
       <!-- 顶部过滤列表 -->
       <div class="flights-content">
         <!-- 过滤条件 -->
-        <div></div>
+        <FlightsFilters :data='flightsData' />
 
         <!-- 航班头部布局 -->
         <FlightsListHead />
@@ -44,11 +44,17 @@
 <script>
 import FlightsListHead from "@/components/air/flightsListHead";
 import FlightsItem from "@/components/air/flightsItem";
+import FlightsFilters from "@/components/air/flightsFilters.vue"
 export default {
   data() {
     return {
       // 机票列表的数据
-      flightsData: {},
+      flightsData: {
+        info:{},
+        options:{},
+        flightTimes:{},
+        company:{}
+      },
       // 当前页数
       pageIndex: 1,
       // 当前的条数
@@ -59,7 +65,8 @@ export default {
   },
   components: {
     FlightsListHead,
-    FlightsItem
+    FlightsItem,
+    FlightsFilters
   },
   mounted() {
     //   请求机票列表数据
