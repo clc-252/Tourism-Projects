@@ -175,10 +175,10 @@ export default {
         },
 
         // 验证验证码
-        contact: {
+        captcha: {
           errMessage: "验证码不能为空",
           validator: () => {
-            return !!this.form.contact;
+            return !!this.form.captcha;
           }
         }
       };
@@ -198,6 +198,23 @@ export default {
         if (!valid) {
           this.$message.error(item.errMessage);
         }
+      });
+
+      // 如果表单验证没有通过，就不发发送请求
+      if (!valid) {
+        return;
+      }
+      // 调用接口发送提交订单的请求
+      this.$axios({
+        url: "/airorders",
+        method: "post",
+        data: this.form,
+        // 添加headers头信息
+        headers: {
+          Authorization: `Bearer ` + this.$store.state.user.userInfo.token
+        }
+      }).then(res => {
+        console.log(res);
       });
     }
   },
