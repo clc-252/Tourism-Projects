@@ -45,11 +45,11 @@
       <div class="contact">
         <el-form label-width="60px">
           <el-form-item label="姓名">
-            <el-input></el-input>
+            <el-input v-model="form.contactName"></el-input>
           </el-form-item>
 
           <el-form-item label="手机">
-            <el-input placeholder="请输入内容">
+            <el-input placeholder="请输入内容" v-model="form.contactPhone">
               <template slot="append">
                 <el-button @click="handleSendCaptcha">发送验证码</el-button>
               </template>
@@ -57,7 +57,7 @@
           </el-form-item>
 
           <el-form-item label="验证码">
-            <el-input></el-input>
+            <el-input v-model="form.captcha"></el-input>
           </el-form-item>
         </el-form>
         <el-button type="warning" class="submit" @click="handleSubmit">提交订单</el-button>
@@ -116,11 +116,89 @@ export default {
     },
 
     // 发送手机验证码
-    handleSendCaptcha() {},
+    handleSendCaptcha() {
+      // 如果没有输入手机号码就不发送请求
+      if (!this.form.contactPhone) {
+        this.$message.error("手机号码不能为空");
+        return;
+      }
+      // 调用user.js中发送验证码的方法
+      this.$store
+        .dispatch("user/sendCaptcha", this.form.contactPhone)
+        .then(res => {
+          this.$message.success("验证码为：000000");
+        });
+    },
 
     // 提交订单
     handleSubmit() {
-      console.log(this.form.insurances);
+      // 设置验证表单的校验规则
+      const rules = {
+        // 验证乘机人信息
+        users: {
+          errMessage: "乘机人信息不能为空",
+          // 自定义校验函数，该函数返回true说明验证通过，返回false说明验证失败
+          validator: () => {
+            let valid = true;
+            this.form.users.forEach(v => {
+              // 只要乘机人信息中有一项信息为空则验证不通过
+              if (!v.username || !v.id) {
+                valid = false;
+              }
+            });
+            return valid;
+          }
+        },
+
+        /* 
+           将字符串转换成布尔类型：Boolean()  或者  ！！
+            例如：var a=''
+                 !!a - 结果为false
+                 var a='123'
+                 !!a - 结果为true
+        */
+
+        // 验证联系人
+        contactName: {
+          errMessage: "联系人姓名不能为空",
+          validator: () => {
+            return !!this.form.contactName;
+          }
+        },
+
+        // 验证手机号码
+        contactPhone: {
+          errMessage: "手机号码不能为空",
+          validator: () => {
+            return !!this.form.contactPhone;
+          }
+        },
+
+        // 验证验证码
+        contact: {
+          errMessage: "验证码不能为空",
+          validator: () => {
+            return !!this.form.contact;
+          }
+        }
+      };
+
+      // 假设所有验证都是通过的
+      let valid = true;
+      // object.keys()：遍历对象，返回一个以对象中的键(key)组成的数组
+      Object.keys(rules).forEach(v => {
+        // 如果已经有一个字段验证不通过，那么就停止验证，不需要继续往下进行验证
+        if (!valid) {
+          return;
+        }
+        const item = rules[v]; // 拿到验证规则中的每一个对象
+        // 执行每个字段下的自定义验证函数(validator)
+        valid = item.validator();
+
+        if (!valid) {
+          this.$message.error(item.errMessage);
+        }
+      });
     }
   },
   mounted() {
