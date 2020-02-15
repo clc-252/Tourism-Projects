@@ -47,7 +47,7 @@
             </el-col>
             <el-col :span="5" class="price">￥{{item.settle_price}}</el-col>
             <el-col :span="3" class="choose-button">
-              <el-button type="warning" size="mini">选定</el-button>
+              <el-button type="warning" size="mini" @click="handleToOrder(item)">选定</el-button>
               <p>剩余：{{item.discount}}</p>
             </el-col>
           </el-row>
@@ -101,6 +101,20 @@ export default {
 
       // 拼接
       return `${hours}小时${min}分`;
+    }
+  },
+  methods:{
+    // 跳转到订单页
+    handleToOrder(item){
+      console.log(item);
+      // 需要获得航班的id和座位id
+      this.$router.push({
+        path:'/air/order',
+        query:{
+          id:this.data.id,
+          seat_xid:item.seat_xid
+        }
+      })
     }
   }
 };

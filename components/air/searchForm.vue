@@ -280,6 +280,9 @@ export default {
         return;
       }
 
+      // 在提交表单之前将表单数据存储到store
+      this.$store.commit('air/setHistory',this.form)
+
       // 点击提交表单，实现页面的跳转，并确保url中带有所需的五个参数
       this.$router.push({
         path: "/air/flights",

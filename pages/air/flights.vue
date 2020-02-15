@@ -36,6 +36,7 @@
       <!-- 侧边栏 -->
       <div class="aside">
         <!-- 侧边栏组件 -->
+        <FlightsAside />
       </div>
     </el-row>
   </section>
@@ -45,6 +46,7 @@
 import FlightsListHead from "@/components/air/flightsListHead";
 import FlightsItem from "@/components/air/flightsItem";
 import FlightsFilters from "@/components/air/flightsFilters.vue";
+import FlightsAside from "@/components/air/flightsAside.vue";
 export default {
   data() {
     return {
@@ -52,7 +54,7 @@ export default {
       flightsData: {
         info: {},
         options: {},
-        flights:[]
+        flights: []
       },
       // 当前页数
       pageIndex: 1,
@@ -64,31 +66,19 @@ export default {
       cacheFlightsData: {
         info: {},
         options: {},
-        flights:[]
+        flights: []
       }
     };
   },
   components: {
     FlightsListHead,
     FlightsItem,
-    FlightsFilters
+    FlightsFilters,
+    FlightsAside
   },
   mounted() {
-    //   请求机票列表数据
-    this.$axios({
-      url: "/airs",
-      params: this.$route.query
-    }).then(res => {
-      //   console.log(res);
-      // 有flights、info、options、total属性
-      this.flightsData = res.data;
-
-      // 备份数组：不能直接=res.data,这样是引用类型的存储，一个发生变化，另一个也是变化了的
-      this.cacheFlightsData={...res.data}
-
-      // 修改总数
-      this.total = this.flightsData.total;
-    });
+    // 调用请求机票列表数据的方法
+    this.getAirList(this.$route.query);
   },
   methods: {
     // 切换每页显示数量列表时触发
@@ -99,12 +89,31 @@ export default {
     handleCurrentChange(index) {
       this.pageIndex = index;
     },
-    
+
     // 获取过滤子组件中过滤后的数据
     getEligibleData(newData) {
       this.flightsData.flights = newData;
       // 修改总数
       this.total = newData.length;
+    },
+
+    // 封装请求机票列表数据的方法
+    getAirList(data) {
+      //   请求机票列表数据
+      this.$axios({
+        url: "/airs",
+        params: data
+      }).then(res => {
+        //   console.log(res);
+        // 有flights、info、options、total属性
+        this.flightsData = res.data;
+
+        // 备份数组：不能直接=res.data,这样是引用类型的存储，一个发生变化，另一个也是变化了的
+        this.cacheFlightsData = { ...res.data };
+
+        // 修改总数
+        this.total = this.flightsData.total;
+      });
     }
   },
   computed: {
@@ -119,6 +128,29 @@ export default {
       );
       return arr;
     }
+  },
+  // 监听url的变化
+  // 方法一：使用watch属性监听$route中url的变化
+  // watch: {
+  //   $route() {
+  //     // 每次都将当前页设为第一页进行展示
+  //     this.pageIndex=1;
+  //     // 调用请求机票列表数据的方法
+  //     this.getAirList(this.$route.query);
+  //   }
+  // }
+  /*   方法二：使用组件内的导航守卫
+    1. 在当前路由改变，但是该组件被复用时调用
+    2. 举例来说，对于一个带有动态参数的路径 /foo/:id，在 /foo/1 和 /foo/2 之间跳转的时候，由于会渲染同样的 Foo 组件，因此组件实例会被复用。而这个钩子就会在这个情况下被调用。
+    4. 可以访问组件实例 `this` */
+  beforeRouteUpdate(to, from, next) {
+    // console.log(to);
+    
+    // 每次都将当前页设为第一页进行展示
+    this.pageIndex = 1;
+    // 请求机票列表数据
+    this.getAirList(to.query);
+    next();
   }
 };
 </script>
