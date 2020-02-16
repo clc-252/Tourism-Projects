@@ -227,8 +227,11 @@ export default {
         seat_xid
       }
     }).then(res => {
-      console.log(res);
+      // console.log(res);
       this.infoData = res.data;
+
+      // 调用store中setOrderDetail方法，将数据存储到store中
+      this.$store.commit('air/setOrderDetail',this.infoData)
     });
   }
 };
