@@ -14,5 +14,14 @@ export default (data)=>{
             // 使用element-ui中的提示信息组件（message）
             Message.error(message)
         }
+
+        // 如果状态码为401(token过期或错误)或者403(接口请求时没有传递token值)
+        if(statusCode===401||statusCode==403){
+            // 跳转到登录页：重定向
+            // redirect(status(状态码),path(跳转路径),query(携带的参数))
+            data.redirect(200,'/user/login',{
+                returnUrl:data.route.fullPath
+            })
+        }
     })
 }

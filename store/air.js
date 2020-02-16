@@ -7,6 +7,9 @@ export const state = () => {
 
 export const mutations = {
   setHistory(state, data) {
-    state.history.push(data)
+    // 让后浏览的记录在前面展示
+    state.history.unshift(data)
+    // 让历史记录只展示特定的条数
+    state.history.length = 5
   }
 }

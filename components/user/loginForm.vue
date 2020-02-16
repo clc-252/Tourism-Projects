@@ -78,7 +78,10 @@ export default {
           this.$store.dispatch('user/login',this.form).then(()=>{
             this.$message.success('登陆成功！')
             // 跳转到首页
-            this.$router.push('/')
+            // this.$router.push('/')
+            // push跳转：路由内存中会多一条记录；如果是replace替换当前的路由
+            // 跳转回上一个页面
+            this.$router.replace(this.$route.query.returnUrl||'/')
           })
         }
       });
