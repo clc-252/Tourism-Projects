@@ -63,6 +63,7 @@
         <el-button type="warning" class="submit" @click="handleSubmit">提交订单</el-button>
       </div>
     </div>
+    <span>{{allPrice}}</span>
   </div>
 </template>
 
@@ -231,8 +232,35 @@ export default {
       this.infoData = res.data;
 
       // 调用store中setOrderDetail方法，将数据存储到store中
-      this.$store.commit('air/setOrderDetail',this.infoData)
+      this.$store.commit("air/setOrderDetail", this.infoData);
     });
+  },
+  computed: {
+    // 计算总价格
+    allPrice() {
+      // 如果seat_infos没有数据，就直接返回
+      if(!this.infoData.seat_infos){
+        return
+      }
+      let price = 0;
+      // 计算单价
+      price += this.infoData.seat_infos.org_settle_price;
+      // 计算机建+燃油费
+      price += this.infoData.airport_tax_audlet;
+      // 计算保险费用
+      this.infoData.insurances.forEach(v=>{
+        // 如果选中的id数组中包含了当前的保险id，则需要加上所选保险的价格
+        if(this.form.insurances.indexOf(v.id)!==-1){
+          price+=v.price
+        }
+      })
+      // 计算总价格
+      price*=this.form.users.length
+
+      // 将计算得到的总价格存到store中
+      this.$store.commit('air/setAllPrice',price)
+      return "";
+    }
   }
 };
 </script>
