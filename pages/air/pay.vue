@@ -37,7 +37,9 @@ export default {
   data() {
     return {
       // 订单详情的数据
-      orderDetail: {}
+      orderDetail: {},
+      // 定时器
+      timer: ""
     };
   },
   mounted() {
@@ -55,15 +57,57 @@ export default {
         this.orderDetail = res.data;
 
         // 二维码
-        const {code_url}=this.orderDetail.payInfo
+        const { code_url } = this.orderDetail.payInfo;
         // 获取要展示二维码的dom节点
-        const canvas=document.getElementById('qrcode-stage')
+        const canvas = document.getElementById("qrcode-stage");
         // 展示
-        QRCode.toCanvas(canvas,code_url,{
-            width:200
-        })
+        QRCode.toCanvas(canvas, code_url, {
+          width: 200
+        });
+
+        // 请求成功之后查询订单的状态：支付结果轮询
+        this.timer = setInterval(() => {
+          this.isPay();
+        }, 3000);
       });
     }, 0);
+  },
+  methods: {
+    // 查询是否支付成功
+    isPay() {
+      // 拿到所需要的数据
+      const { id, price, orderNo } = this.orderDetail;
+      this.$axios({
+        url: "/airorders/checkpay",
+        method: "post",
+        data: {
+          id,
+          nonce_str: price, // 支付接口返回的订单金额
+          out_trade_no: orderNo // 订单编号
+        },
+        // 添加headers头信息
+        headers: {
+          Authorization: `Bearer ` + this.$store.state.user.userInfo.token
+        }
+      }).then(res => {
+        // console.log(res);
+        if (res.data.statusTxt == "支付完成") {
+          // 停止定时器
+          clearInterval(this.timer);
+
+          // 成功支付之后提醒用户支付成功
+          this.$alert("支付成功", "支付状态提示", {
+            confirmButtonText: "确定",
+            type: "success"
+          });
+        }
+      });
+    }
+  },
+  // 在组件销毁的时候触发
+  destroyed() {
+    // 停止定时器
+    clearInterval(this.timer);
   }
 };
 </script>

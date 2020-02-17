@@ -217,6 +217,11 @@ export default {
       }).then(res => {
         // console.log(res);
 
+        this.$message({
+          message: '订单正在生成中，请稍等',
+          iconClass:'el-icon-loading'
+        });
+
         // 跳转到付款页
         setTimeout(()=>{
           this.$router.push({
