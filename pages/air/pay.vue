@@ -24,17 +24,26 @@
 </template>
 
 <script>
+// 引入二维码插件
+import QRCode from "qrcode";
+/*  
+    toCanvas(canvas, text, [options], [cb(error)])
+     - canvas：传递当前要展示二维码的dom节点
+     - text：生成二维码的字符串
+     - options：选项，比如：大小、颜色等
+     - cb(error)
+*/
 export default {
-    data(){
-        return{
-            // 订单详情的数据
-            orderDetail:{}
-        }
-    },
+  data() {
+    return {
+      // 订单详情的数据
+      orderDetail: {}
+    };
+  },
   mounted() {
     // 一开始无法拿到token，因为先组件加载再加载store仓库中的数据，而mounted是在页面一加载完成之后便执行，先于仓库的加载，所以需要添加定时器推迟请求的执行，定时器的时间可以为0，因为定时器会等待之前的内容执行完毕之后再执行
     setTimeout(() => {
-        // 请求订单详情
+      // 请求订单详情
       this.$axios({
         url: `/airorders/${this.$route.query.id}`,
         // 添加headers头信息
@@ -43,7 +52,16 @@ export default {
         }
       }).then(res => {
         // console.log(res);
-        this.orderDetail=res.data
+        this.orderDetail = res.data;
+
+        // 二维码
+        const {code_url}=this.orderDetail.payInfo
+        // 获取要展示二维码的dom节点
+        const canvas=document.getElementById('qrcode-stage')
+        // 展示
+        QRCode.toCanvas(canvas,code_url,{
+            width:200
+        })
       });
     }, 0);
   }
