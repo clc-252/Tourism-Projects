@@ -215,7 +215,17 @@ export default {
           Authorization: `Bearer ` + this.$store.state.user.userInfo.token
         }
       }).then(res => {
-        console.log(res);
+        // console.log(res);
+
+        // 跳转到付款页
+        setTimeout(()=>{
+          this.$router.push({
+            path:'/air/pay',
+            query:{
+              id:res.data.data.id  // 拿到订单的id
+            }
+          })
+        },1500)
       });
     }
   },

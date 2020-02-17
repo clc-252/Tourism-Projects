@@ -3,11 +3,11 @@ export const state = () => {
     // 历史纪录
     history: [],
     // 订单详情信息
-    orderDetail:{
-      seat_infos:{}
+    orderDetail: {
+      seat_infos: {}
     },
     // 总价格
-    allPrice:0
+    allPrice: 0
   }
 }
 
@@ -17,14 +17,16 @@ export const mutations = {
     // 让后浏览的记录在前面展示
     state.history.unshift(data)
     // 让历史记录只展示特定的条数
-    state.history.length = 5
+    if (state.history.length > 5) {
+      state.history.length = 5
+    }
   },
   // 修改订单详情的方法
-  setOrderDetail(state,data){
-    state.orderDetail=data
+  setOrderDetail(state, data) {
+    state.orderDetail = data
   },
   // 将总价格保存到这里
-  setAllPrice(state,data){
-    state.allPrice=data
+  setAllPrice(state, data) {
+    state.allPrice = data
   }
 }
